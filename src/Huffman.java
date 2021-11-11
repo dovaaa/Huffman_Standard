@@ -134,16 +134,18 @@ public class Huffman {
     public String compFactor(String Input,String Compressed)throws IOException {
         Scanner f = new Scanner("input");
         Scanner c = new Scanner("inputCompressed");
+        BufferedReader bufferedReaderF = new BufferedReader(new InputStreamReader(new FileInputStream(new File("input"))));
+        BufferedReader bufferedReaderC = new BufferedReader(new InputStreamReader(new FileInputStream(new File("inputCompressed"))));
+        String a,b;
         double countOriginal=0,countCompressed=0;
-        while (f.hasNext()){
-            countOriginal++;
-            f.next();
+        while ((a=bufferedReaderF.readLine())!=null){
+            countOriginal+=a.length();
         }
-        while (c.hasNext()){
-            countCompressed++;
-            c.next();
+        while ((b=bufferedReaderC.readLine())!=null){
+            countCompressed+=b.length();
+
         }
-        countCompressed/=8;
+        countCompressed=countCompressed/8.0;
         double compFactor;
         compFactor = countCompressed/ countOriginal;
         compFactor=100-compFactor*100;
