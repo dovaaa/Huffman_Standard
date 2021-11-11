@@ -131,7 +131,24 @@ public class Huffman {
         W.flush();
         W.close();
     }
-
+    public String compFactor(String Input,String Compressed)throws IOException {
+        Scanner f = new Scanner("input");
+        Scanner c = new Scanner("inputCompressed");
+        double countOriginal=0,countCompressed=0;
+        while (f.hasNext()){
+            countOriginal++;
+            f.next();
+        }
+        while (c.hasNext()){
+            countCompressed++;
+            c.next();
+        }
+        countCompressed/=8;
+        double compFactor;
+        compFactor = countCompressed/ countOriginal;
+        compFactor=100-compFactor*100;
+        return String.valueOf(compFactor+"%");
+    }
 
     public static void main(String[] args) {
         System.out.println("1.compress" +
@@ -143,6 +160,7 @@ public class Huffman {
 
             try {
                 huff.compress("input");
+                System.out.println(huff.compFactor("input","inputComPressed"));
             } catch (FileNotFoundException e) {
                 System.out.println("File Not found");
             } catch (IOException e) {
