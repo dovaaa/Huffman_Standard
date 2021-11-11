@@ -110,15 +110,29 @@ public class Huffman {
         //Scanner R = new Scanner(In+"_Dictionary");
         //R = new FileReader(In+"_Dictionary");   TODO choose one
     }
-    public void readCompressed(String In)throws IOException{
-        //Scanner R = new Scanner(In+"Compressed");
-        //R = new FileReader(In+"Compressed");   TODO choose one
-    }
+
     public void decompress(String In) throws IOException{
 
     }
 
-
+    public String compFactor(String Input,String Compressed)throws IOException {
+        Scanner f = new Scanner("input");
+        Scanner c = new Scanner("inputCompressed");
+        double countOriginal=0,countCompressed=0;
+        while (f.hasNext()){
+            countOriginal++;
+            f.next();
+        }
+        while (c.hasNext()){
+            countCompressed++;
+            c.next();
+        }
+        countCompressed/=8;
+        double compFactor;
+        compFactor = countCompressed/ countOriginal;
+        compFactor=100-compFactor*100;
+        return String.valueOf(compFactor+"%");
+    }
     public static void main(String[] args) {
         System.out.println("1.compress" +
                 "\n2.decompress");
@@ -131,12 +145,16 @@ public class Huffman {
 
             try {
                 huff.compress("input");
+                System.out.println(huff.compFactor("input","inputCompressed"));
             } catch (FileNotFoundException e) {
                 System.out.println("File Not found");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
         }
+
         else if(input==2){
             try {
                 huff.decompress("input");
