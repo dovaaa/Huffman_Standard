@@ -1,5 +1,3 @@
-
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -13,13 +11,13 @@ class HuffmanNode implements Comparable<HuffmanNode> {
         freq=0;
 
     }
-   HuffmanNode(char c,int freq,HuffmanNode left,HuffmanNode right){
-       this.freq=freq;
-       this.c=c;
-       this.left=left;
-       this.right=right;
+    HuffmanNode(char c,int freq,HuffmanNode left,HuffmanNode right){
+        this.freq=freq;
+        this.c=c;
+        this.left=left;
+        this.right=right;
 
-   }
+    }
 
     public boolean isLeaf() {
         return right == null && left == null;
@@ -27,13 +25,14 @@ class HuffmanNode implements Comparable<HuffmanNode> {
 
     @Override
     public int compareTo(HuffmanNode that){
-       return this.freq-that.freq;
+        return this.freq-that.freq;
     }
 }
 public class Huffman {
     Reader R;
     PrintWriter W;
     HashMap<Character,Integer> map = new HashMap<>();
+    HashMap<String,String> dictionary = new HashMap<>();
     PriorityQueue<HuffmanNode> pque= new PriorityQueue<>();
     HashMap<Character,String> dict = new HashMap<>();
     public Huffman(){
@@ -107,32 +106,33 @@ public class Huffman {
     }
 
     public void readTree(String In) throws IOException{ //Read Dictionary To decompress
-        //Scanner R = new Scanner(In+"_Dictionary");
-        //R = new FileReader(In+"_Dictionary");   TODO choose one
-    }
+        FileReader reader = new FileReader("input_Dictionary");
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] temp = line.split(",");
+            dictionary.put(temp[1],temp[0]);
 
+        }
+    }
     public void decompress(String In) throws IOException{
-
+        R = new FileReader(In+"Compressed");
+        W= new PrintWriter(In+"DeCompressed");
+        String word="";
+        readTree(In);
+        int nextChar;
+        while (((nextChar=R.read())!=-1)){
+             word+=String.valueOf((char)(nextChar));
+             if(dictionary.containsKey(word)){
+                 W.print(dictionary.get((word)));
+                 word="";
+             }
+        }
+        W.flush();
+        W.close();
     }
 
-    public String compFactor(String Input,String Compressed)throws IOException {
-        Scanner f = new Scanner("input");
-        Scanner c = new Scanner("inputCompressed");
-        double countOriginal=0,countCompressed=0;
-        while (f.hasNext()){
-            countOriginal++;
-            f.next();
-        }
-        while (c.hasNext()){
-            countCompressed++;
-            c.next();
-        }
-        countCompressed/=8;
-        double compFactor;
-        compFactor = countCompressed/ countOriginal;
-        compFactor=100-compFactor*100;
-        return String.valueOf(compFactor+"%");
-    }
+
     public static void main(String[] args) {
         System.out.println("1.compress" +
                 "\n2.decompress");
@@ -141,20 +141,14 @@ public class Huffman {
         Huffman huff = new Huffman();
         if(input==1) {
 
-
-
             try {
                 huff.compress("input");
-                System.out.println(huff.compFactor("input","inputCompressed"));
             } catch (FileNotFoundException e) {
                 System.out.println("File Not found");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
-
         else if(input==2){
             try {
                 huff.decompress("input");
