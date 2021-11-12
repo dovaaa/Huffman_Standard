@@ -2,16 +2,15 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Scanner;
-
 class HuffmanNode implements Comparable<HuffmanNode> {
     int freq;
-    char c;
+    String c;
     HuffmanNode left,right;
     HuffmanNode(){
         freq=0;
 
     }
-    HuffmanNode(char c,int freq,HuffmanNode left,HuffmanNode right){
+    HuffmanNode(String c,int freq,HuffmanNode left,HuffmanNode right){
         this.freq=freq;
         this.c=c;
         this.left=left;
@@ -31,20 +30,22 @@ class HuffmanNode implements Comparable<HuffmanNode> {
 public class Huffman {
     Reader R;
     PrintWriter W;
-    HashMap<Character,Integer> map = new HashMap<>();
+    HashMap<String,Integer> map = new HashMap<>();
     HashMap<String,String> dictionary = new HashMap<>();
     PriorityQueue<HuffmanNode> pque= new PriorityQueue<>();
-    HashMap<Character,String> dict = new HashMap<>();
-    public Huffman(){
-    }
+    HashMap<String,String> dict = new HashMap<>();
 
     public void freq(String In) throws IOException{ //Making a frequency Map
         R = new FileReader(In);
         int nextChar;
         while ((nextChar=R.read())!=-1){
-            map.merge((char) nextChar, 1, Integer::sum);
+            if(nextChar=='\n'){
+                map.merge("\\n", 1, Integer::sum);
+            }else if(nextChar=='\r')
+                map.merge(String.valueOf("\\r"), 1, Integer::sum);
+            else
+                map.merge(String.valueOf( (char)nextChar), 1, Integer::sum);
         }
-
     }
     public void printCode(HuffmanNode root, String s)//building the binary for the dictionary
     {
@@ -55,8 +56,8 @@ public class Huffman {
         printCode(root.left,s+"0");
         printCode(root.right,s+"1");
     }
-    public void buildTree(HashMap<Character,Integer> map){ //Making the dictionary
-        for(char c:map.keySet()){
+    public void buildTree(HashMap<String,Integer> map){ //Making the dictionary
+        for(String c:map.keySet()){
             HuffmanNode node= new HuffmanNode(c,map.get(c),null,null);
             System.out.println("character: "+node.c+", frequency:"+node.freq);
             pque.add(node);
@@ -70,7 +71,7 @@ public class Huffman {
 
             HuffmanNode f = new HuffmanNode();
             f.freq = left.freq+right.freq;
-            f.c='-';
+            f.c="-";
             f.left=left;
             f.right=right;
             root=f;
@@ -81,14 +82,12 @@ public class Huffman {
 
     public void writeTree(String In)throws IOException{ //Write Dictionary to compress
         W= new PrintWriter(In+"_Dictionary");
-        for(Character c: dict.keySet()){
+        for(String c: dict.keySet()){
             W.println(c+","+dict.get(c));
         }
         W.flush();
         W.close();
     }
-
-
     public void compress(String In) throws IOException{
         freq(In);
         buildTree(map);
@@ -97,7 +96,13 @@ public class Huffman {
         W= new PrintWriter(In+"Compressed");
         int next;
         while ((next=R.read())!=-1){
-            W.print(dict.get((char)next));
+            if(next==10){
+                W.print(dict.get(String.valueOf("\\n")));
+            }else if(next==13){
+                W.print(dict.get(String.valueOf("\\r")));
+            }
+            else
+                W.print(dict.get(String.valueOf((char)next)));
         }
 
         R.close();
@@ -112,7 +117,6 @@ public class Huffman {
         while ((line = br.readLine()) != null) {
             String[] temp = line.split(",");
             dictionary.put(temp[1],temp[0]);
-
         }
     }
     public void decompress(String In) throws IOException{
@@ -120,11 +124,17 @@ public class Huffman {
         W= new PrintWriter(In+"DeCompressed");
         String word="";
         readTree(In);
+        System.out.println(dictionary);
         int nextChar;
         while (((nextChar=R.read())!=-1)){
              word+=String.valueOf((char)(nextChar));
              if(dictionary.containsKey(word)){
-                 W.print(dictionary.get((word)));
+                 if(dictionary.get((word)).equals("\\r")){
+                     W.print("\r");
+                 }else if(dictionary.get((word)).equals("\\n"))
+                  W.print("\n");
+                 else
+                     W.print(dictionary.get((word)));
                  word="";
              }
         }
@@ -148,8 +158,8 @@ public class Huffman {
         countCompressed=countCompressed/8.0;
         double compFactor;
         compFactor = countCompressed/ countOriginal;
-        compFactor=100-compFactor*100;
-        return String.valueOf(compFactor+"%");
+        compFactor=(100-compFactor*100);
+        return String.valueOf((int)compFactor+"%");
     }
 
     public static void main(String[] args) {
