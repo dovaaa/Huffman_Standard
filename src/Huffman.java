@@ -83,7 +83,7 @@ public class Huffman {
     public void writeTree(String In)throws IOException{ //Write Dictionary to compress
         W= new PrintWriter(In+"_Dictionary");
         for(String c: dict.keySet()){
-            W.println(c+","+dict.get(c));
+            W.println(c+"|"+dict.get(c));
         }
         W.flush();
         W.close();
@@ -115,7 +115,7 @@ public class Huffman {
         BufferedReader br = new BufferedReader(reader);
         String line;
         while ((line = br.readLine()) != null) {
-            String[] temp = line.split(",");
+            String[] temp = line.split("\\|");
             dictionary.put(temp[1],temp[0]);
         }
     }
